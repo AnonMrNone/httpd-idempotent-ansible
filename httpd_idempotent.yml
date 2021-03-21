@@ -1,0 +1,24 @@
+- name: httpd server idempotent
+  hosts: vm
+  vars:
+          pkgs:
+                  - httpd
+                  - php
+                  - python36
+  tasks:
+          - name: httd php python36 present
+            yum:
+                    name: "{{ item }}"
+                    state: present
+            loop: "{{ pkgs }}"
+          - name: webpage present
+            copy:
+                    src: /root/practice/index.html
+                    dest: /var/www/html
+            notify:
+                    - start httpd
+  handlers:
+          - name: start httpd
+            service:
+                    name: httpd
+                    state: started
